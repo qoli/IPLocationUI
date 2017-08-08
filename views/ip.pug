@@ -1,0 +1,21 @@
+block content
+  table#table-1(border="0")
+    tr
+      
+      th 目標地址
+      th 端口
+      th 通道和狀態
+    each val in json
+      tr
+        td
+          | #{val.local}
+          | <br/> <span class="mini">#{val.dst}</span>
+        td
+          | #{val.sport}
+          | <br/> #{val.dport}
+        td
+          | #{val.proto}
+          | <br/> #{val.state}
+        
+      
+  

@@ -1,0 +1,34 @@
+body {
+  padding: 10px;
+  font: 13px "Lucida Grande", Helvetica, Arial, sans-serif;
+  color: #333;
+}
+
+a {
+  color: #00B7FF;
+}
+
+.mini {
+  font-size: 0.8em !important;
+  color: #999;
+}
+
+thead, tr, td {
+  border: none;
+}
+
+
+/* Alternating background colors */
+
+#table-1 tr:nth-child(even) {
+  background: RGBA(61, 96, 170, 0.06);
+  border: none;
+}
+
+#table-1 tr:nth-child(odd) {
+  background: #FFF
+}
+
+td {
+  padding: 4px;
+}
