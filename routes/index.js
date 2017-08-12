@@ -3,10 +3,13 @@ var request = require('request');
 var maxmind = require('maxmind');
 var srequest = require('sync-request');
 
+const url_prefix = "http://" + "10.0.0.1/cgi-bin/luci/;";
+const appTitle = '網絡地址轉換器'
+
 var router = express.Router();
 var session = null;
 var stok = null;
-var url_prefix = "http://" + "10.0.0.1/cgi-bin/luci/;";
+var lg_i = 0;
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -14,23 +17,18 @@ router.get('/', function(req, res, next) {
   get_stok(function(err, httpResponse, body) {
     url = url_prefix + stok + "/api/sys/get_clients"
     lg('請求網址', url);
-    request({
-      url: url,
-      headers: {
-        Cookie: session
-      }
-    }, function(error, response, body) {
+
+    getByCookie(url, function(error, response, body) {
       json = JSON.parse(body);
 
-      console.log(json.clients);
-
       res.render('list', {
-        title: 'IP Location',
+        title: appTitle,
         stok: stok,
         list: json.clients
       });
 
-    });
+    })
+
   })
 
 });
@@ -49,11 +47,11 @@ router.get('/:ip', function(req, res) {
       error: error
     });
 
-    return
+    return;
   }
 
   res.render('index', {
-    title: 'IP Location',
+    title: appTitle,
     stok: stok
   });
 });
@@ -63,7 +61,7 @@ router.get('/json/:ip', function(req, res) {
   url = url_prefix + stok + "/api/sys/dump_conntrack?ipaddr=" + i;
 
   lg('IP', i)
-  lg('請求網址', url)
+  // lg('請求網址', url)
 
   if (stok != null) {
 
@@ -74,34 +72,20 @@ router.get('/json/:ip', function(req, res) {
       }
     }, function(error, response, body) {
       json = JSON.parse(body);
-
       list = json.connections;
-
       output = [];
 
+      // 循環 IP 列表并附加地址信息
       for (var attributename in list) {
         i = list[attributename];
         l = getip_maxmind(i.dst);
 
         if (l != null) {
 
-          if (l.hasOwnProperty('city')) {
-            c_name = l.city.names;
-          } else {
-            c_name = {
-              en: '-'
-            }
-          }
+          c_name = ifNameNull('city')
+          c_country = ifNameNull('country')
 
-          if (l.hasOwnProperty('country')) {
-            c_country = l.country.names;
-          } else {
-            c_country = {
-              'zh-CN': '-'
-            }
-          }
-
-          c = c_name['en'] + ' / ' + c_country['zh-CN'];
+          c = c_name['name'] + ' / ' + c_country['name'];
         } else {
           c = '-'
         }
@@ -118,7 +102,7 @@ router.get('/json/:ip', function(req, res) {
       }
 
       res.render('ip', {
-        title: 'IP Location',
+        title: appTitle,
         json: output
       });
     });
@@ -129,7 +113,7 @@ router.get('/json/:ip', function(req, res) {
     }
 
     res.render('ip', {
-      title: 'IP Location',
+      title: appTitle,
       json: output
     });
   }
@@ -149,6 +133,8 @@ function getip_maxmind(i) {
 }
 
 function lg(name, text) {
+  console.log('');
+  console.log('> Log: ' + lg_i++);
   console.log('> ' + name + ': ' + text);
 }
 
@@ -170,8 +156,42 @@ function get_stok(callback) {
       lg('stok', stok);
     }
 
-
     callback(err, httpResponse, body);
 
   })
+}
+
+function getByCookie(url, callback) {
+  request({
+    url: url,
+    headers: {
+      Cookie: session
+    }
+  }, function(error, response, body) {
+    callback(error, response, body)
+  });
+
+}
+
+function ifNameNull(name) {
+  if (l.hasOwnProperty(name)) {
+    o = eval("l." + name + ".names");
+
+    if (o.hasOwnProperty('en')) {
+      r = {
+        'name': o['en']
+      }
+    }
+    if (o.hasOwnProperty('zh-CN')) {
+      r = {
+        'name': o['zh-CN']
+      }
+    }
+
+  } else {
+    r = {
+      'name': '-'
+    }
+  }
+  return r;
 }
