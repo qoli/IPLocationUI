@@ -1,0 +1,11 @@
+extends layout
+
+block content
+  h1 #{title}
+  p #{stok}
+  hr
+  h5 請選擇 IP
+  each ip in list
+    p 
+      a(href='/'+ip.ipaddr+'?ip='+ip.ipaddr) #{ip.ipaddr}
+      span  / #{ip.hostname} / #{ip.mac}

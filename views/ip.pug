@@ -1,4 +1,6 @@
 block content
+  a.btn.btn-default(href='/') 返回首頁
+  hr
   table#table-1(border="0")
     tr
       
@@ -7,9 +9,10 @@ block content
       th 通道和狀態
     each val in json
       tr
-        td
-          | #{val.local}
-          | <br/> <span class="mini">#{val.dst}</span>
+        td 
+          span.b #{val.local}
+          br
+          span.mini #{val.dst}
         td
           | #{val.sport}
           | <br/> #{val.dport}

@@ -8,13 +8,21 @@ a {
   color: #00B7FF;
 }
 
+.b {
+  color: #333;
+  font-weight: bolder;
+}
+
 .mini {
   font-size: 0.8em !important;
-  color: #999;
 }
 
 thead, tr, td {
   border: none;
+}
+
+td {
+  color: #999;
 }
 
 
@@ -31,4 +39,9 @@ thead, tr, td {
 
 td {
   padding: 4px;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid #eee;
 }
